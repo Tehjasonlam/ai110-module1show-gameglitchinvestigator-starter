@@ -7,7 +7,8 @@ def get_range_for_difficulty(difficulty: str):
     if difficulty == "Normal":
         return 1, 100
     if difficulty == "Hard":
-        return 1, 50
+        # FIXED: Hard range (1–500) is now larger than Normal (1–100), making Hard properly harder
+        return 1, 500
     return 1, 100
 
 
@@ -34,16 +35,21 @@ def check_guess(guess, secret):
         return "Win", "🎉 Correct!"
 
     try:
-        if guess > secret:
-            return "Too High", "📈 Go HIGHER!"
+        if guess < secret:
+            # FIXED: guess is too low, so status is "Too Low" and hint is Go HIGHER
+            return "Too Low", "📈 Go HIGHER!"
         else:
-            return "Too Low", "📉 Go LOWER!"
+            # FIXED: guess is too high, so status is "Too High" and hint is Go LOWER
+            return "Too High", "📉 Go LOWER!"
     except TypeError:
         g = str(guess)
         if g == secret:
             return "Win", "🎉 Correct!"
+        # FIXME: Logic breaks here — string comparison is lexicographic so "9" > "10" is True even though 9 < 10; should compare as integers
+        # FIXME: Logic breaks here — "Too High" should hint Go LOWER not HIGHER
         if g > secret:
             return "Too High", "📈 Go HIGHER!"
+        # FIXME: Logic breaks here — "Too Low" should hint Go HIGHER not LOWER
         return "Too Low", "📉 Go LOWER!"
 
 
@@ -93,6 +99,7 @@ if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
 
 if "attempts" not in st.session_state:
+    # FIXME: Logic breaks here — starting at 1 means the first display shows attempts_left = limit - 1 instead of limit
     st.session_state.attempts = 1
 
 if "score" not in st.session_state:
@@ -107,6 +114,7 @@ if "history" not in st.session_state:
 st.subheader("Make a guess")
 
 st.info(
+    # FIXME: Logic breaks here — "1 and 100" is hardcoded so the range never updates when difficulty changes; should use `low` and `high`
     f"Guess a number between 1 and 100. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
@@ -133,6 +141,8 @@ with col3:
 
 if new_game:
     st.session_state.attempts = 0
+    # FIXME: Logic breaks here — status is never reset to "playing", so after a win/loss the game stays stuck on the end screen
+    # FIXME: Logic breaks here — randint(1, 100) is hardcoded; should use `low` and `high` so difficulty affects the new game
     st.session_state.secret = random.randint(1, 100)
     st.success("New game started.")
     st.rerun()
@@ -155,6 +165,8 @@ if submit:
     else:
         st.session_state.history.append(guess_int)
 
+        # FIXME: Logic breaks here — converting secret to a string on even attempts causes string comparison instead of numeric,
+        # making "50" > "42" True even when 50 > 42 should give "Too High" (go lower), not trigger the wrong branch
         if st.session_state.attempts % 2 == 0:
             secret = str(st.session_state.secret)
         else:

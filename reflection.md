@@ -14,9 +14,17 @@ Document at least 3 bugs you found. Add rows as needed.
 
 | Input | Expected Behavior | Actual Behavior | Console Output / Error |
 |-------|-------------------|-----------------|------------------------|
-| | | | |
-| | | | |
-| | | | |
+|-------|Attemptes allowed and attemps left, 8 - 7|8 - 7|------------------------|
+|Guess the number bewteen doesnt change when switching difficuly|Range should change when switching difficulty|stuck at 1 - 100|------------------------|
+|2------| higher------------| higher----------|None
+|50-----| Lower-------------| higher----------|None
+|70-----| Lower-------------| higher----------|None
+|85-----| Lower-------------| higher----------|None
+|90-----| Lower-------------| higher----------|None
+|98---- | Lower-------------| higher----------|None
+|100----| Lower-------------| higher----------|None
+|New Game| restart the game| the game is stuck|----------|None
+
 
 ---
 
